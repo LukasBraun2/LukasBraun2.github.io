@@ -609,7 +609,7 @@ window.stopTimer=async()=>{
   $("main-btn").className="start-btn go";
   $("main-btn").innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="#0A0B0F"><polygon points="5,3 19,12 5,21"/></svg>';
   resetInputs();
-  if(dur<1)return;
+  if(dur<0)return;
   await saveEntry({desc:entryDesc,projectId:entryProj,tags:entryTags,start,end,duration:dur});
 };
 
@@ -620,7 +620,7 @@ window.logManual=async()=>{
   if(!md){showTimerErr("Please select a date.");return;}
   const start=new Date(md+"T"+ms),end=new Date(md+"T"+me);
   const dur=Math.floor((end-start)/1000);
-  if(dur<=0){showTimerErr("End time must be after start time.");return;}
+  if(dur<0){showTimerErr("End time must be after start time.");return;}
   await saveEntry({desc:$("timer-desc").value||"Untitled",projectId:window.selectedProj,tags:[...window.selectedTags],start,end,duration:dur});
   resetInputs();
   $("manual-start").value="";$("manual-end").value="";
@@ -699,8 +699,8 @@ window.updateEditDur=()=>{
   const e=new Date(dateVal+"T"+endVal);
   const dur=Math.floor((e-s)/1000);
   const el=$("edit-dur-display");
-  el.textContent=dur>0?fmt(dur):"--:--:--";
-  el.style.color=dur>0?"var(--accent)":"var(--red)";
+  el.textContent=dur>=0?fmt(dur):"--:--:--";
+  el.style.color=dur>=0?"var(--accent)":"var(--red)";
 };
 window.saveEdit=async()=>{
   const id=$("edit-id").value;
@@ -712,7 +712,7 @@ window.saveEdit=async()=>{
   const newStart=new Date(dateVal+"T"+startVal);
   const newEnd=new Date(dateVal+"T"+endVal);
   const dur=Math.floor((newEnd-newStart)/1000);
-  if(dur<=0){$("edit-time-err").textContent="End must be after start.";$("edit-time-err").style.display="block";return;}
+  if(dur<0){$("edit-time-err").textContent="End must be after start.";$("edit-time-err").style.display="block";return;}
   const tags=[...document.querySelectorAll(".edit-tag-toggle.on")].map(b=>b.dataset.tag);
   await updateDoc(doc(db,"entries",id),{
     desc:$("edit-desc").value,projectId:$("edit-proj").value||null,tags,
