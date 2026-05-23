@@ -179,6 +179,91 @@ body{background:var(--bg0);color:var(--t0);font-family:'Plus Jakarta Sans',syste
 .pulse{animation:pulse 1.8s ease-in-out infinite;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 .fadeIn{animation:fadeIn .25s ease;}
+
+/* ── Mobile nav overlay ── */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(4px);}
+.sidebar-overlay.open{display:block;}
+.hamburger{display:none;background:none;border:none;cursor:pointer;color:var(--t1);padding:6px;border-radius:6px;align-items:center;justify-content:center;}
+.hamburger:hover{background:var(--bg3);color:var(--t0);}
+
+/* ── Responsive ── */
+@media(max-width:768px){
+  /* Sidebar becomes a slide-in drawer */
+  .sidebar{position:fixed;left:-240px;top:0;z-index:200;width:240px;height:100vh;transition:left .25s ease;box-shadow:none;}
+  .sidebar.open{left:0;box-shadow:4px 0 40px rgba(0,0,0,.5);}
+  .hamburger{display:flex;}
+
+  /* Topbar adjustments */
+  .topbar{padding:0 16px;gap:10px;}
+  .topbar-title{font-size:13px;}
+  .tstat-label{font-size:9px;}
+  .tstat-val{font-size:12px;}
+  .topbar-stats{gap:14px;}
+
+  /* Content padding */
+  .content{padding:16px;}
+
+  /* Timer card stacks */
+  .timer-row{flex-wrap:wrap;gap:10px;}
+  .timer-input{font-size:14px;width:100%;}
+  .timer-controls{width:100%;flex-wrap:wrap;gap:6px;}
+  .divider{display:none;}
+  .elapsed{font-size:16px;min-width:70px;}
+
+  /* Manual inputs stack */
+  #timer-controls-manual > div{flex-wrap:wrap;gap:6px;}
+  .time-input{width:calc(50% - 10px)!important;}
+  .add-btn{width:100%;}
+
+  /* Entry rows compact */
+  .entry-row{padding:11px 12px;gap:10px;}
+  .entry-bar{height:30px;}
+  .entry-desc{font-size:13px;}
+  .entry-time{display:none;}
+  .entry-dur{font-size:13px;min-width:64px;}
+  .row-acts{opacity:1!important;}
+
+  /* Day header */
+  .day-header{padding:0;}
+
+  /* Stats grid stacks to 1 col */
+  .stat-grid{grid-template-columns:1fr;}
+  .stat-val{font-size:22px;}
+
+  /* Reports proj rows compact */
+  .proj-row{padding:14px 16px;}
+  .proj-card-hdr{padding:12px 16px;}
+
+  /* Modal full-screen on mobile */
+  .modal{width:100%;max-width:100%;border-radius:16px 16px 0 0;padding:24px 20px;position:fixed;bottom:0;left:0;right:0;max-height:90vh;overflow-y:auto;}
+  .modal-bg.open{align-items:flex-end;}
+  .time-row{flex-wrap:wrap;gap:8px;}
+  .time-col{flex:1;min-width:120px;}
+  .time-arrow{display:none;}
+  .duration-col{width:100%;margin-top:0;text-align:left;display:flex;align-items:center;gap:8px;}
+  .duration-lbl{margin-bottom:0;}
+
+  /* Sub entry rows indent less */
+  .sub-row-indent{padding-left:22px!important;}
+}
+
+@media(max-width:480px){
+  .login-card{padding:28px 20px;}
+  .logo-text{font-size:20px;}
+  .topbar-stats{gap:10px;}
+  .tstat:last-child{display:none;}
+  .chip span:not(svg){max-width:80px;overflow:hidden;text-overflow:ellipsis;}
+  .entry-dur{min-width:56px;font-size:12px;}
+  .stat-val{font-size:20px;}
+}
+
+@media(min-width:769px) and (max-width:1024px){
+  .sidebar{width:180px;}
+  .content{padding:20px;}
+  .stat-grid{grid-template-columns:repeat(3,1fr);}
+  .entry-time{display:none;}
+  .timer-controls{flex-wrap:wrap;gap:6px;}
+}
 </style>
 </head>
 <body>
@@ -205,8 +290,11 @@ body{background:var(--bg0);color:var(--t0);font-family:'Plus Jakarta Sans',syste
 <!-- ══════════════ APP ══════════════ -->
 <div id="app">
   <div class="shell">
+    <!-- Mobile sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
     <!-- Sidebar -->
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
       <div class="sb-logo">
         <div class="sb-logo-icon">
           <svg width="13" height="13" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="5.5" stroke="#0A0B0F" stroke-width="1.6"/><path d="M7 4v3.5l2 1.5" stroke="#0A0B0F" stroke-width="1.6" stroke-linecap="round"/></svg>
@@ -246,7 +334,12 @@ body{background:var(--bg0);color:var(--t0);font-family:'Plus Jakarta Sans',syste
     <!-- Main -->
     <div class="main">
       <div class="topbar">
-        <div class="topbar-title" id="topbar-title">Time Tracker</div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <button class="hamburger" onclick="openSidebar()" aria-label="Open menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          </button>
+          <div class="topbar-title" id="topbar-title">Time Tracker</div>
+        </div>
         <div class="topbar-stats">
           <div class="tstat">
             <div class="tstat-label">Today</div>
@@ -436,6 +529,9 @@ const applyTimeStr=(base,ts)=>{const d=new Date(base);const[h,m]=ts.split(":").m
 const weekStart=()=>{const n=new Date(),ws=new Date(n);ws.setDate(n.getDate()-n.getDay());ws.setHours(0,0,0,0);return ws;};
 const $=id=>document.getElementById(id);
 
+window.openSidebar=()=>{$("sidebar").classList.add("open");$("sidebar-overlay").classList.add("open");};
+window.closeSidebar=()=>{$("sidebar").classList.remove("open");$("sidebar-overlay").classList.remove("open");};
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 window.handleLogin = async()=>{
   const btn=$("google-btn"); btn.disabled=true; btn.textContent="Signing in…";
@@ -506,13 +602,13 @@ function startFirestoreListener(user){
   });
 }
 
-// ── View switching ────────────────────────────────────────────────────────────
 window.setView=v=>{
   $("view-tracker").style.display=v==="tracker"?"block":"none";
   $("view-reports").style.display=v==="reports"?"block":"none";
   $("nav-tracker").className="nav-btn"+(v==="tracker"?" on":"");
   $("nav-reports").className="nav-btn"+(v==="reports"?" on":"");
   $("topbar-title").textContent=v==="tracker"?"Time Tracker":"My Reports";
+  closeSidebar();
 };
 
 // ── Dropdowns ─────────────────────────────────────────────────────────────────
