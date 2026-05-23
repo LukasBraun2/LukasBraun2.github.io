@@ -793,9 +793,7 @@ function updateTopStats(){
   const ws=weekStart();
   const liveExtra=window.timerStart?Math.floor((Date.now()-window.timerStart)/1000):0;
   const todayBase=entries.filter(e=>new Date(e.start).toDateString()===new Date().toDateString()).reduce((s,e)=>s+e.duration,0);
-  const weekBase=entries.filter(e=>new Date(e.start)>=ws).reduce((s,e)=>s+e.duration,0);
   $("stat-today").textContent=fmt(todayBase+liveExtra);
-  $("stat-week").textContent=fmt(weekBase+liveExtra);
 }
 
 // ── Reports ───────────────────────────────────────────────────────────────────
