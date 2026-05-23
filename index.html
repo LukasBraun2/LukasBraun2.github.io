@@ -568,15 +568,20 @@ window.stopTimer=async()=>{
   if(!window.timerStart)return;
   clearInterval(window.timerInterval);
   const end=new Date(),start=new Date(window.timerStart),dur=Math.floor((end-start)/1000);
+  const entryDesc=$("timer-desc").value||"Untitled";
+  const entryProj=window.selectedProj;
+  const entryTags=[...window.selectedTags];
+  // Reset UI immediately so it feels instant
   window.timerStart=null;
   $("timer-card").classList.remove("recording");
   $("rec-badge").style.display="none";
   $("elapsed-display").style.display="none";
+  $("elapsed-display").textContent="";
   $("main-btn").className="start-btn go";
   $("main-btn").innerHTML='<svg width="12" height="12" viewBox="0 0 24 24" fill="#0A0B0F"><polygon points="5,3 19,12 5,21"/></svg>';
-  if(dur<1)return;
-  await saveEntry({desc:$("timer-desc").value||"Untitled",projectId:window.selectedProj,tags:[...window.selectedTags],start,end,duration:dur});
   resetInputs();
+  if(dur<1)return;
+  await saveEntry({desc:entryDesc,projectId:entryProj,tags:entryTags,start,end,duration:dur});
 };
 
 // ── Manual log ────────────────────────────────────────────────────────────────
@@ -610,7 +615,14 @@ window.toggleMode=()=>{
 // ── Firestore save/update/delete ──────────────────────────────────────────────
 async function saveEntry(e){
   if(!window.currentUser)return;
-  await addDoc(collection(db,"entries"),{
+  // Show immediately in UI without waiting for Firestore round-trip
+  const tempId="temp-"+Date.now();
+  const optimistic={...e,id:tempId,start:new Date(e.start),end:new Date(e.end)};
+  window.currentEntries=[optimistic,...window.currentEntries];
+  renderEntries();
+  updateTopStats();
+  // Write to Firestore in background; snapshot listener will swap in real ID
+  addDoc(collection(db,"entries"),{
     ...e,uid:window.currentUser.uid,email:window.currentUser.email,userName:window.currentUser.displayName,
     start:Timestamp.fromDate(new Date(e.start)),end:Timestamp.fromDate(new Date(e.end)),
   });
