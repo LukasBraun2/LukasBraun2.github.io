@@ -439,12 +439,13 @@ window.handleLogin = async()=>{
 };
 window.handleSignOut=()=>signOut(auth);
 
+let firestoreUnsub=null;
+
 onAuthStateChanged(auth, user=>{
   window.currentUser=user;
   if(user){
     $("login-screen").style.display="none";
     $("app").style.display="block";
-    // populate sidebar
     $("user-name-sb").textContent=user.displayName||"";
     $("user-email-sb").textContent=user.email||"";
     const wrap=$("user-avatar-wrap");
@@ -452,29 +453,57 @@ onAuthStateChanged(auth, user=>{
     else{wrap.innerHTML=`<div class="user-avatar-placeholder">${(user.displayName||"?")[0]}</div>`;}
     startFirestoreListener(user);
   }else{
+    if(firestoreUnsub){firestoreUnsub();firestoreUnsub=null;}
     $("login-screen").style.display="flex";
     $("app").style.display="none";
     clearInterval(window.timerInterval);
     window.timerStart=null;
     window.currentEntries=[];
+    renderEntries();
+    renderReports();
   }
 });
 
 // ── Firestore listener ────────────────────────────────────────────────────────
+function parseEntry(d){
+  const data=d.data();
+  return{...data,id:d.id,
+    start:data.start?.toDate?data.start.toDate():new Date(data.start),
+    end:data.end?.toDate?data.end.toDate():new Date(data.end)};
+}
+
 function startFirestoreListener(user){
-  const q=query(collection(db,"entries"),where("uid","==",user.uid),orderBy("start","desc"));
-  onSnapshot(q, snap=>{
-    window.currentEntries=snap.docs.map(d=>{
-      const data=d.data();
-      return{...data,id:d.id,
-        start:data.start?.toDate?data.start.toDate():new Date(data.start),
-        end:data.end?.toDate?data.end.toDate():new Date(data.end)};
-    });
+  if(firestoreUnsub){firestoreUnsub();firestoreUnsub=null;}
+  $("db-loading").style.display="block";
+
+  // Try ordered query first; if it fails (missing index), fall back to unordered
+  const qOrdered=query(collection(db,"entries"),where("uid","==",user.uid),orderBy("start","desc"));
+  const qSimple =query(collection(db,"entries"),where("uid","==",user.uid));
+
+  function applySnap(snap){
+    const entries=snap.docs.map(parseEntry);
+    // Sort client-side descending by start
+    entries.sort((a,b)=>new Date(b.start)-new Date(a.start));
+    // Merge: keep temp optimistic entries that haven't been confirmed yet
+    const realIds=new Set(entries.map(e=>e.id));
+    const tempEntries=window.currentEntries.filter(e=>e.id.startsWith("temp-")&&!realIds.has(e.id));
+    window.currentEntries=[...tempEntries,...entries];
     $("db-loading").style.display="none";
     renderEntries();
     renderReports();
     updateTopStats();
-  },()=>$("db-loading").style.display="none");
+  }
+
+  // First try the ordered query (requires composite index in Firestore)
+  firestoreUnsub=onSnapshot(qOrdered, applySnap, ()=>{
+    // Ordered query failed (index not created yet) — fall back to simple query
+    console.warn("Ordered query failed, falling back to simple query. Create a Firestore index for faster queries.");
+    if(firestoreUnsub){firestoreUnsub();firestoreUnsub=null;}
+    firestoreUnsub=onSnapshot(qSimple, applySnap, err=>{
+      console.error("Firestore error:",err);
+      $("db-loading").style.display="none";
+    });
+  });
 }
 
 // ── View switching ────────────────────────────────────────────────────────────
@@ -615,17 +644,27 @@ window.toggleMode=()=>{
 // ── Firestore save/update/delete ──────────────────────────────────────────────
 async function saveEntry(e){
   if(!window.currentUser)return;
-  // Show immediately in UI without waiting for Firestore round-trip
+  // Add optimistically to local state so UI updates instantly
   const tempId="temp-"+Date.now();
   const optimistic={...e,id:tempId,start:new Date(e.start),end:new Date(e.end)};
   window.currentEntries=[optimistic,...window.currentEntries];
   renderEntries();
+  renderReports();
   updateTopStats();
-  // Write to Firestore in background; snapshot listener will swap in real ID
-  addDoc(collection(db,"entries"),{
-    ...e,uid:window.currentUser.uid,email:window.currentUser.email,userName:window.currentUser.displayName,
-    start:Timestamp.fromDate(new Date(e.start)),end:Timestamp.fromDate(new Date(e.end)),
-  });
+  // Save to Firestore — listener will fire and replace temp entry with real one
+  try{
+    await addDoc(collection(db,"entries"),{
+      ...e,uid:window.currentUser.uid,email:window.currentUser.email,userName:window.currentUser.displayName,
+      start:Timestamp.fromDate(new Date(e.start)),end:Timestamp.fromDate(new Date(e.end)),
+    });
+  }catch(err){
+    console.error("Failed to save entry:",err);
+    // Remove optimistic entry on failure
+    window.currentEntries=window.currentEntries.filter(x=>x.id!==tempId);
+    renderEntries();
+    renderReports();
+    alert("Failed to save entry. Check your connection and try again.");
+  }
 }
 window.deleteEntry=async id=>{if(confirm("Delete this entry?"))await deleteDoc(doc(db,"entries",id));};
 window.saveEdit=async()=>{
