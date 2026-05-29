@@ -823,10 +823,6 @@ window.expandedGroups = new Set();
 
 function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
 
-window.timeLogClicked = (entry) => {
-  openEdit(entry);
-};
-
 function renderEntries(){
   const entries=window.currentEntries;
   const list=$("entry-list"),empty=$("empty-state");
