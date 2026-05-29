@@ -30,7 +30,6 @@
   .pw-wrap input:focus{border-color:rgba(245,166,35,.5);}
   .login-btn{width:100%;background:var(--accent);color:#0A0B0F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;}
   .login-btn:hover{opacity:.88;}
-  .login-btn:disabled{opacity:.5;cursor:not-allowed;}
   .err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px;}
   .badge-admin{display:inline-flex;align-items:center;gap:5px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;}
 
@@ -86,6 +85,7 @@
   .entry-row:hover{background:var(--bg3);}
   .entry-dot{width:3px;height:30px;border-radius:2px;flex-shrink:0;}
   .entry-desc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t0);}
+  .entry-proj{font-size:11.5px;font-weight:500;margin-left:8px;flex-shrink:0;}
   .entry-tags{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
   .tag-pill{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--t2);border:1px solid var(--border);}
   .entry-time{font-size:11.5px;color:var(--t2);min-width:110px;text-align:right;flex-shrink:0;}
@@ -121,7 +121,7 @@
       <input type="password" id="pw-input" placeholder="Admin password" onkeydown="if(event.key==='Enter')tryLogin()"/>
     </div>
     <div class="err" id="pw-err"></div>
-    <button class="login-btn" id="login-btn" onclick="tryLogin()" style="margin-top:8px">Sign in</button>
+    <button class="login-btn" onclick="tryLogin()" style="margin-top:8px">Sign in</button>
   </div>
 </div>
 
@@ -140,6 +140,7 @@
     </div>
   </header>
 
+  <!-- Stats -->
   <div class="stats-bar" id="stats-bar">
     <div class="stat-card"><div class="stat-label">Total students</div><div class="stat-val mono" id="stat-students">—</div><div class="stat-sub">logged in</div></div>
     <div class="stat-card"><div class="stat-label">Hours this week</div><div class="stat-val mono" id="stat-week">—</div><div class="stat-sub">across all students</div></div>
@@ -147,6 +148,7 @@
     <div class="stat-card"><div class="stat-label">Avg this week</div><div class="stat-val mono" id="stat-avg">—</div><div class="stat-sub">per active student</div></div>
   </div>
 
+  <!-- Controls -->
   <div class="controls">
     <div class="search-wrap">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -164,136 +166,83 @@
     </select>
   </div>
 
+  <!-- Student list -->
   <div class="table-wrap">
     <div id="student-list"><div class="loading">Loading student data…</div></div>
   </div>
 </div>
 
+<!-- Firebase SDKs -->
 <script type="module">
-import { initializeApp }          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot, doc }
-                                   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getFunctions, httpsCallable }
-                                   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-functions.js";
-import { getAuth, signInWithCustomToken, signOut, onAuthStateChanged }
-                                   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ── Firebase config (public — no secrets here) ────────────────────────────────
+// ── CONFIG — change ADMIN_PASSWORD to whatever you want ──────────────────────
+const ADMIN_PASSWORD = "BVT2024admin!";
+// ─────────────────────────────────────────────────────────────────────────────
+
 const firebaseConfig = {
-  apiKey:            "AIzaSyDSQFxsEh3pOPHesUIvNmMqxdWSbCTqVxk",
-  authDomain:        "bvttimetracker.firebaseapp.com",
-  projectId:         "bvttimetracker",
-  storageBucket:     "bvttimetracker.firebasestorage.app",
+  apiKey: "AIzaSyDSQFxsEh3pOPHesUIvNmMqxdWSbCTqVxk",
+  authDomain: "bvttimetracker.firebaseapp.com",
+  projectId: "bvttimetracker",
+  storageBucket: "bvttimetracker.firebasestorage.app",
   messagingSenderId: "879288786037",
-  appId:             "1:879288786037:web:fd58f63b0d05041288ac3c",
+  appId: "1:879288786037:web:fd58f63b0d05041288ac3c",
 };
 
-const firebaseApp = initializeApp(firebaseConfig);
-const db          = getFirestore(firebaseApp);
-const auth        = getAuth(firebaseApp);
-const functions   = getFunctions(firebaseApp);
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
 
-// ── Cloud Function callable ────────────────────────────────────────────────────
-// Password lives in Firebase Secret Manager — never in this file.
-const adminLoginFn = httpsCallable(functions, "adminLogin");
-
-// ── Project config ────────────────────────────────────────────────────────────
 const PROJECTS = {
-  academy:  { name:"Academy",   color:"#818CF8", cls:"academy"   },
-  volunteer:{ name:"Volunteer", color:"#22C97A", cls:"volunteer"  },
-  module5:  { name:"Module 5",  color:"#F5A623", cls:"module5"   },
+  academy:  { name:"Academy",   color:"#818CF8", cls:"academy"  },
+  volunteer:{ name:"Volunteer", color:"#22C97A", cls:"volunteer" },
+  module5:  { name:"Module 5",  color:"#F5A623", cls:"module5"  },
 };
 
-// ── Formatting helpers ─────────────────────────────────────────────────────────
-const fmt       = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`; };
-const fmtShort  = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h ${m}m`:`${m}m`; };
-const fmtTime   = d => new Date(d).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const fmt = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`; };
+const fmtShort = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h ${m}m`:`${m}m`; };
+const fmtTime  = d => new Date(d).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const fmtDateShort = d => new Date(d).toLocaleDateString([],{month:"short",day:"numeric"});
 const weekStart = () => { const n=new Date(),ws=new Date(n); ws.setDate(n.getDate()-n.getDay()); ws.setHours(0,0,0,0); return ws; };
-const initials  = name => (name||"?").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
-const COLORS    = ["#818CF8","#22C97A","#F5A623","#38BDF8","#F472B6","#FB923C","#A78BFA","#34D399"];
+const initials = name => (name||"?").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const COLORS = ["#818CF8","#22C97A","#F5A623","#38BDF8","#F472B6","#FB923C","#A78BFA","#34D399"];
 const userColor = email => COLORS[Math.abs([...email].reduce((a,c)=>a+c.charCodeAt(0),0))%COLORS.length];
 
-let allEntries   = [];
+let allEntries = [];
 let expandedUsers = new Set();
-let statsUnsub   = null;
-let entriesUnsub = null;
 
-// ── Auth state ─────────────────────────────────────────────────────────────────
-onAuthStateChanged(auth, user => {
-  if (user) {
-    // Verify the admin custom claim is present before showing the app.
-    user.getIdTokenResult().then(result => {
-      if (result.claims.admin) {
-        showApp();
-      } else {
-        // Signed in but not admin — sign them out cleanly.
-        signOut(auth);
-      }
-    });
-  } else {
-    showLogin();
-  }
-});
-
-function showLogin() {
-  stopListeners();
-  document.getElementById("login-screen").style.display = "flex";
-  document.getElementById("app").style.display          = "none";
-}
-
-function showApp() {
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app").style.display          = "flex";
-  startListeners();
-}
-
-// ── Login ──────────────────────────────────────────────────────────────────────
-window.tryLogin = async () => {
-  const pw  = document.getElementById("pw-input").value;
+// ── Auth ─────────────────────────────────────────────────────────────────────
+window.tryLogin = () => {
+  const pw = document.getElementById("pw-input").value;
   const err = document.getElementById("pw-err");
-  const btn = document.getElementById("login-btn");
-
-  err.textContent = "";
-  btn.disabled    = true;
-  btn.textContent = "Signing in…";
-
-  try {
-    // The password is validated server-side inside the Cloud Function.
-    // On success we get a custom token; we sign into Firebase with it so
-    // Firestore security rules can enforce the admin claim.
-    const { data } = await adminLoginFn({ password: pw });
-    await signInWithCustomToken(auth, data.customToken);
-    // onAuthStateChanged will call showApp() automatically.
-  } catch (e) {
-    err.textContent     = e.code === "functions/unauthenticated"
-      ? "Incorrect password. Try again."
-      : "Login error — please retry.";
-    btn.disabled        = false;
-    btn.textContent     = "Sign in";
+  if (pw === ADMIN_PASSWORD) {
+    sessionStorage.setItem("tempo_admin", "1");
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("app").style.display = "flex";
+    startListening();
+  } else {
+    err.textContent = "Incorrect password. Try again.";
     document.getElementById("pw-input").value = "";
   }
 };
 
-window.signOutAdmin = () => signOut(auth);
+window.signOutAdmin = () => {
+  sessionStorage.removeItem("tempo_admin");
+  location.reload();
+};
 
-// ── Firestore listeners ────────────────────────────────────────────────────────
-function startListeners() {
-  // 1. Pre-aggregated stats from /meta/stats (written by Cloud Function)
-  statsUnsub = onSnapshot(doc(db, "meta", "stats"), snap => {
-    if (!snap.exists()) return;
-    const s = snap.data();
-    document.getElementById("stat-students").textContent = s.totalUsers  ?? "—";
-    document.getElementById("stat-week").textContent     = fmtShort(s.weekSecs ?? 0);
-    document.getElementById("stat-entries").textContent  = s.totalEntries ?? "—";
-    document.getElementById("stat-avg").textContent      = fmtShort(s.avgWeekSecs ?? 0);
-    document.getElementById("last-updated").textContent  =
-      "Updated " + new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
-  });
+// Auto-restore session
+if (sessionStorage.getItem("tempo_admin")==="1") {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app").style.display = "flex";
+  startListening();
+}
 
-  // 2. Entries — real-time stream (Firestore rules now enforce admin claim)
-  const q = query(collection(db, "entries"), orderBy("start", "desc"));
-  entriesUnsub = onSnapshot(q, snap => {
+// ── Firestore listener ────────────────────────────────────────────────────────
+function startListening() {
+  const q = query(collection(db,"entries"), orderBy("start","desc"));
+  onSnapshot(q, snap => {
     allEntries = snap.docs.map(d => {
       const data = d.data();
       return {
@@ -302,25 +251,35 @@ function startListeners() {
         end:   data.end?.toDate   ? data.end.toDate()   : new Date(data.end),
       };
     });
+    document.getElementById("last-updated").textContent = "Updated " + new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    updateStats();
     renderStudents();
   });
 }
 
-function stopListeners() {
-  statsUnsub?.();
-  entriesUnsub?.();
-  statsUnsub   = null;
-  entriesUnsub = null;
-  allEntries   = [];
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const ws = weekStart();
+  const weekEntries = allEntries.filter(e => new Date(e.start) >= ws);
+  const users = [...new Set(allEntries.map(e=>e.uid))];
+  const activeThisWeek = [...new Set(weekEntries.map(e=>e.uid))];
+  const weekSecs = weekEntries.reduce((s,e)=>s+e.duration,0);
+  const avgSecs  = activeThisWeek.length>0 ? Math.round(weekSecs/activeThisWeek.length) : 0;
+
+  document.getElementById("stat-students").textContent = users.length;
+  document.getElementById("stat-week").textContent     = fmtShort(weekSecs);
+  document.getElementById("stat-entries").textContent  = allEntries.length;
+  document.getElementById("stat-avg").textContent      = fmtShort(avgSecs);
 }
 
-// ── Render (unchanged logic — pure UI) ────────────────────────────────────────
+// ── Render ────────────────────────────────────────────────────────────────────
 window.renderStudents = () => {
-  const search = document.getElementById("search-input").value.toLowerCase();
-  const projF  = document.getElementById("proj-filter").value;
-  const weekF  = document.getElementById("week-filter").value;
-  const ws     = weekStart();
+  const search   = document.getElementById("search-input").value.toLowerCase();
+  const projF    = document.getElementById("proj-filter").value;
+  const weekF    = document.getElementById("week-filter").value;
+  const ws       = weekStart();
 
+  // Group by user
   const byUser = {};
   allEntries.forEach(e => {
     if (!byUser[e.uid]) byUser[e.uid] = { uid:e.uid, email:e.email||"", name:e.userName||e.email||"Unknown", entries:[] };
@@ -328,8 +287,12 @@ window.renderStudents = () => {
   });
 
   let users = Object.values(byUser);
+
+  // Filter
   if (search) users = users.filter(u => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
   if (projF)  users = users.filter(u => u.entries.some(e=>e.projectId===projF));
+
+  // Sort by total this week desc
   users.sort((a,b) => {
     const sumW = u => u.entries.filter(e=>new Date(e.start)>=ws).reduce((s,e)=>s+e.duration,0);
     return sumW(b)-sumW(a);
@@ -344,11 +307,13 @@ window.renderStudents = () => {
     const ws2 = weekStart();
     const relevantEntries = weekF==="week" ? u.entries.filter(e=>new Date(e.start)>=ws2) : u.entries;
     const filteredEntries = projF ? relevantEntries.filter(e=>e.projectId===projF) : relevantEntries;
+
     const totalSecs  = filteredEntries.reduce((s,e)=>s+e.duration,0);
     const totalCount = filteredEntries.length;
     const isOpen     = expandedUsers.has(u.uid);
     const col        = userColor(u.email);
 
+    // Project breakdown pills
     const projBreakdown = Object.entries(
       filteredEntries.reduce((a,e)=>{ if(e.projectId){ a[e.projectId]=(a[e.projectId]||0)+e.duration; } return a; },{})
     ).sort((a,b)=>b[1]-a[1]);
