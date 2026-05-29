@@ -749,7 +749,7 @@ async function saveEntry(e){
   if(!window.currentUser)return;
   try{
     await addDoc(collection(db,"entries"),{
-      ...e,sessionId: e.sessionId || crypto.randomUUID(),uid:window.currentUser.uid,email:window.currentUser.email,userName:window.currentUser.displayName,
+      ...e,uid:window.currentUser.uid,email:window.currentUser.email,userName:window.currentUser.displayName,
       start:Timestamp.fromDate(new Date(e.start)),end:Timestamp.fromDate(new Date(e.end)),
     });
   }catch(err){
@@ -821,18 +821,10 @@ $("edit-modal").addEventListener("click",e=>{if(e.target===$("edit-modal"))close
 // ── Expanded entry groups state ───────────────────────────────────────────────
 window.expandedGroups = new Set();
 
-function groupKey(e){
-  return e.sessionId;
-}
+function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
 
 window.timeLogClicked = (entry) => {
-  const matchingEntries = window.currentEntries.filter(e =>
-    groupKey(e) === groupKey(entry)
-  );
-
-  if(matchingEntries.length === 1 ){
-    openEdit(entry);
-  }
+  openEdit(entry);
 };
 
 function renderEntries(){
