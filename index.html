@@ -823,6 +823,10 @@ window.expandedGroups = new Set();
 
 function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
 
+window.timeLogClicked = (entry) => {
+  openEdit(entry);
+};
+
 function renderEntries(){
   const entries=window.currentEntries;
   const list=$("entry-list"),empty=$("empty-state");
@@ -869,7 +873,7 @@ function renderEntries(){
 
       return`
         <div>
-          <div class="entry-row" style="cursor:${hasMultiple?"pointer":"default"};" onclick="${hasMultiple?`toggleGroup('${safeGk}')`:``}">
+          <div class="entry-row" style="cursor:${hasMultiple?"pointer":"default"};" onclick="timeLogClicked(${JSON.stringify(first).replace(/"/g,"&quot;")}); ${hasMultiple?`toggleGroup('${safeGk}')`:``}">
             <div class="entry-bar" style="background:${p?p.color:"var(--bg4)"}"></div>
             <div class="entry-body">
               <div style="display:flex;align-items:center;gap:7px;">
