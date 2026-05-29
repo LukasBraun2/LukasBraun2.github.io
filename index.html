@@ -829,7 +829,7 @@ function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
       e.projectId === entry.projectId
     );
 
-  if(matchingEntries === 1 ){
+  if(matchingEntries.length === 1 ){
     openEdit(entry);
   }
 };
