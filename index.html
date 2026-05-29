@@ -823,15 +823,8 @@ window.expandedGroups = new Set();
 
 function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
 
-  window.timeLogClicked = (entry) => {
-      const matchingEntries = window.currentEntries.filter(e =>
-      e.desc === entry.desc &&
-      e.projectId === entry.projectId
-    );
-
-  if(matchingEntries.length === 1 ){
-    openEdit(entry);
-  }
+window.timeLogClicked = (entry) => {
+  openEdit(entry);
 };
 
 function renderEntries(){
