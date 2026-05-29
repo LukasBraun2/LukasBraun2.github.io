@@ -25,12 +25,14 @@
   .logo-text{font-size:22px;font-weight:700;letter-spacing:-.02em;}
   .login-card h1{font-size:18px;font-weight:600;margin-bottom:8px;letter-spacing:-.01em;}
   .login-card p{font-size:13px;color:var(--t2);margin-bottom:28px;line-height:1.6;}
-  .pw-wrap{position:relative;margin-bottom:12px;}
-  .pw-wrap input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--t0);font-family:inherit;outline:none;transition:border-color .15s;}
-  .pw-wrap input:focus{border-color:rgba(245,166,35,.5);}
-  .login-btn{width:100%;background:var(--accent);color:#0A0B0F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;}
+  .field{margin-bottom:10px;text-align:left;}
+  .field label{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--t2);margin-bottom:6px;}
+  .field input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--t0);font-family:inherit;outline:none;transition:border-color .15s;}
+  .field input:focus{border-color:rgba(245,166,35,.5);}
+  .login-btn{width:100%;background:var(--accent);color:#0A0B0F;border:none;border-radius:8px;padding:11px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:opacity .15s;margin-top:8px;}
   .login-btn:hover{opacity:.88;}
-  .err{font-size:12px;color:var(--red);margin-top:8px;min-height:18px;}
+  .login-btn:disabled{opacity:.45;cursor:not-allowed;}
+  .err{font-size:12px;color:var(--red);margin-top:10px;min-height:18px;text-align:left;}
   .badge-admin{display:inline-flex;align-items:center;gap:5px;background:rgba(245,166,35,.12);border:1px solid rgba(245,166,35,.3);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:600;color:var(--accent);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;}
 
   /* ── App shell ── */
@@ -39,6 +41,8 @@
   header .brand{display:flex;align-items:center;gap:9px;}
   header .brand-icon{width:24px;height:24px;border-radius:6px;background:var(--accent);display:flex;align-items:center;justify-content:center;}
   header h1{font-size:14px;font-weight:600;letter-spacing:-.01em;}
+  .header-right{display:flex;align-items:center;gap:16px;}
+  .admin-chip{font-size:11px;color:var(--t2);}
   .signout-btn{background:none;border:1px solid var(--border2);border-radius:7px;padding:6px 14px;font-family:inherit;font-size:12px;color:var(--t1);cursor:pointer;transition:all .15s;}
   .signout-btn:hover{background:var(--bg3);color:var(--t0);}
 
@@ -64,7 +68,7 @@
   .student-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:12px;}
   .student-header{display:flex;align-items:center;gap:14px;padding:14px 18px;cursor:pointer;transition:background .1s;user-select:none;}
   .student-header:hover{background:var(--bg3);}
-  .avatar{width:34px;height:34px;border-radius:50%;background:var(--bg4);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;color:var(--t0);}
+  .avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;flex-shrink:0;}
   .student-info{flex:1;min-width:0;}
   .student-name{font-size:14px;font-weight:500;color:var(--t0);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .student-email{font-size:12px;color:var(--t2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -78,26 +82,22 @@
   /* ── Entry rows ── */
   .entries-wrap{border-top:1px solid var(--border);display:none;}
   .entries-wrap.open{display:block;}
-  .proj-bar{display:flex;gap:0;padding:12px 18px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;}
+  .proj-bar{padding:12px 18px;border-bottom:1px solid var(--border);display:flex;flex-wrap:wrap;gap:8px;}
   .proj-pill{font-size:11px;padding:3px 10px;border-radius:20px;font-weight:500;}
   .entry-row{display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);font-size:13px;}
   .entry-row:last-child{border-bottom:none;}
   .entry-row:hover{background:var(--bg3);}
   .entry-dot{width:3px;height:30px;border-radius:2px;flex-shrink:0;}
   .entry-desc{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--t0);}
-  .entry-proj{font-size:11.5px;font-weight:500;margin-left:8px;flex-shrink:0;}
-  .entry-tags{display:flex;gap:4px;flex-wrap:wrap;flex-shrink:0;}
   .tag-pill{font-size:10px;padding:2px 7px;border-radius:10px;background:var(--bg4);color:var(--t2);border:1px solid var(--border);}
   .entry-time{font-size:11.5px;color:var(--t2);min-width:110px;text-align:right;flex-shrink:0;}
   .entry-dur{font-size:13px;font-weight:500;color:var(--t0);min-width:72px;text-align:right;flex-shrink:0;}
   .no-entries{padding:24px 18px;text-align:center;color:var(--t2);font-size:13px;}
-
-  /* ── Loading / empty ── */
   .loading{text-align:center;padding:80px;color:var(--t2);font-size:14px;}
+
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   .fadeIn{animation:fadeIn .25s ease;}
 
-  /* ── Project colors ── */
   .c-academy{color:#818CF8;} .bg-academy{background:rgba(129,140,248,.15);border-color:rgba(129,140,248,.4);}
   .c-volunteer{color:#22C97A;} .bg-volunteer{background:rgba(34,201,122,.15);border-color:rgba(34,201,122,.4);}
   .c-module5{color:#F5A623;} .bg-module5{background:rgba(245,166,35,.15);border-color:rgba(245,166,35,.4);}
@@ -117,11 +117,12 @@
     <div class="badge-admin">⬡ Admin Portal</div>
     <h1>Instructor access</h1>
     <p>Enter the admin password to view all student time tracking reports.</p>
-    <div class="pw-wrap">
-      <input type="password" id="pw-input" placeholder="Admin password" onkeydown="if(event.key==='Enter')tryLogin()"/>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="pw-input" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()"/>
     </div>
     <div class="err" id="pw-err"></div>
-    <button class="login-btn" onclick="tryLogin()" style="margin-top:8px">Sign in</button>
+    <button class="login-btn" id="login-btn" onclick="tryLogin()">Sign in</button>
   </div>
 </div>
 
@@ -134,21 +135,20 @@
       </div>
       <h1>Tempo — Admin</h1>
     </div>
-    <div style="display:flex;align-items:center;gap:16px;">
+    <div class="header-right">
       <span id="last-updated" style="font-size:11px;color:var(--t2);"></span>
+      <span class="admin-chip" id="admin-email"></span>
       <button class="signout-btn" onclick="signOutAdmin()">Sign out</button>
     </div>
   </header>
 
-  <!-- Stats -->
-  <div class="stats-bar" id="stats-bar">
+  <div class="stats-bar">
     <div class="stat-card"><div class="stat-label">Total students</div><div class="stat-val mono" id="stat-students">—</div><div class="stat-sub">logged in</div></div>
     <div class="stat-card"><div class="stat-label">Hours this week</div><div class="stat-val mono" id="stat-week">—</div><div class="stat-sub">across all students</div></div>
     <div class="stat-card"><div class="stat-label">Total entries</div><div class="stat-val mono" id="stat-entries">—</div><div class="stat-sub">all time</div></div>
     <div class="stat-card"><div class="stat-label">Avg this week</div><div class="stat-val mono" id="stat-avg">—</div><div class="stat-sub">per active student</div></div>
   </div>
 
-  <!-- Controls -->
   <div class="controls">
     <div class="search-wrap">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -166,32 +166,30 @@
     </select>
   </div>
 
-  <!-- Student list -->
   <div class="table-wrap">
     <div id="student-list"><div class="loading">Loading student data…</div></div>
   </div>
 </div>
 
-<!-- Firebase SDKs -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// ── CONFIG — change ADMIN_PASSWORD to whatever you want ──────────────────────
-const ADMIN_PASSWORD = "BVT2024admin!";
-// ─────────────────────────────────────────────────────────────────────────────
+import { initializeApp }     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, query, orderBy, onSnapshot }
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged }
+                              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDSQFxsEh3pOPHesUIvNmMqxdWSbCTqVxk",
-  authDomain: "bvttimetracker.firebaseapp.com",
-  projectId: "bvttimetracker",
-  storageBucket: "bvttimetracker.firebasestorage.app",
+  apiKey:            "AIzaSyDSQFxsEh3pOPHesUIvNmMqxdWSbCTqVxk",
+  authDomain:        "bvttimetracker.firebaseapp.com",
+  projectId:         "bvttimetracker",
+  storageBucket:     "bvttimetracker.firebasestorage.app",
   messagingSenderId: "879288786037",
-  appId: "1:879288786037:web:fd58f63b0d05041288ac3c",
+  appId:             "1:879288786037:web:fd58f63b0d05041288ac3c",
 };
 
-const app = initializeApp(firebaseConfig);
-const db  = getFirestore(app);
+const firebaseApp = initializeApp(firebaseConfig);
+const db          = getFirestore(firebaseApp);
+const auth        = getAuth(firebaseApp);
 
 const PROJECTS = {
   academy:  { name:"Academy",   color:"#818CF8", cls:"academy"  },
@@ -199,50 +197,71 @@ const PROJECTS = {
   module5:  { name:"Module 5",  color:"#F5A623", cls:"module5"  },
 };
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
-const fmt = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`; };
-const fmtShort = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h ${m}m`:`${m}m`; };
-const fmtTime  = d => new Date(d).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+const fmt          = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),ss=s%60; return `${String(h).padStart(2,"0")}:${String(m).padStart(2,"0")}:${String(ss).padStart(2,"0")}`; };
+const fmtShort     = s => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60); return h>0?`${h}h ${m}m`:`${m}m`; };
+const fmtTime      = d => new Date(d).toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
 const fmtDateShort = d => new Date(d).toLocaleDateString([],{month:"short",day:"numeric"});
-const weekStart = () => { const n=new Date(),ws=new Date(n); ws.setDate(n.getDate()-n.getDay()); ws.setHours(0,0,0,0); return ws; };
-const initials = name => (name||"?").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
-const COLORS = ["#818CF8","#22C97A","#F5A623","#38BDF8","#F472B6","#FB923C","#A78BFA","#34D399"];
-const userColor = email => COLORS[Math.abs([...email].reduce((a,c)=>a+c.charCodeAt(0),0))%COLORS.length];
+const weekStart    = () => { const n=new Date(),ws=new Date(n); ws.setDate(n.getDate()-n.getDay()); ws.setHours(0,0,0,0); return ws; };
+const initials     = name => (name||"?").split(" ").map(w=>w[0]).slice(0,2).join("").toUpperCase();
+const COLORS       = ["#818CF8","#22C97A","#F5A623","#38BDF8","#F472B6","#FB923C","#A78BFA","#34D399"];
+const userColor    = email => COLORS[Math.abs([...email].reduce((a,c)=>a+c.charCodeAt(0),0))%COLORS.length];
 
-let allEntries = [];
+let allEntries    = [];
 let expandedUsers = new Set();
+let unsubEntries  = null;
 
-// ── Auth ─────────────────────────────────────────────────────────────────────
-window.tryLogin = () => {
-  const pw = document.getElementById("pw-input").value;
-  const err = document.getElementById("pw-err");
-  if (pw === ADMIN_PASSWORD) {
-    sessionStorage.setItem("tempo_admin", "1");
+// ── Auth state ────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, user => {
+  if (user) {
     document.getElementById("login-screen").style.display = "none";
-    document.getElementById("app").style.display = "flex";
+    document.getElementById("app").style.display          = "flex";
+    document.getElementById("admin-email").textContent    = user.email;
     startListening();
   } else {
-    err.textContent = "Incorrect password. Try again.";
+    document.getElementById("login-screen").style.display = "flex";
+    document.getElementById("app").style.display          = "none";
+    stopListening();
+  }
+});
+
+// ── Login ─────────────────────────────────────────────────────────────────────
+// Hardcoded admin account email — set this to whatever you used when
+// creating the user in Firebase console → Authentication → Users.
+const ADMIN_EMAIL = "admin@lukasbraun2.github.io";
+
+window.tryLogin = async () => {
+  const pw  = document.getElementById("pw-input").value;
+  const err = document.getElementById("pw-err");
+  const btn = document.getElementById("login-btn");
+
+  err.textContent = "";
+  if (!pw) { err.textContent = "Please enter the admin password."; return; }
+
+  btn.disabled    = true;
+  btn.textContent = "Signing in…";
+
+  try {
+    await signInWithEmailAndPassword(auth, ADMIN_EMAIL, pw);
+    // onAuthStateChanged handles the rest
+  } catch (e) {
+    const msgs = {
+      "auth/invalid-credential": "Incorrect password. Try again.",
+      "auth/wrong-password":     "Incorrect password. Try again.",
+      "auth/too-many-requests":  "Too many attempts — try again later.",
+    };
+    err.textContent = msgs[e.code] || "Sign-in failed. Please retry.";
+    btn.disabled    = false;
+    btn.textContent = "Sign in";
     document.getElementById("pw-input").value = "";
   }
 };
 
-window.signOutAdmin = () => {
-  sessionStorage.removeItem("tempo_admin");
-  location.reload();
-};
-
-// Auto-restore session
-if (sessionStorage.getItem("tempo_admin")==="1") {
-  document.getElementById("login-screen").style.display = "none";
-  document.getElementById("app").style.display = "flex";
-  startListening();
-}
+window.signOutAdmin = () => signOut(auth);
 
 // ── Firestore listener ────────────────────────────────────────────────────────
 function startListening() {
-  const q = query(collection(db,"entries"), orderBy("start","desc"));
-  onSnapshot(q, snap => {
+  const q = query(collection(db, "entries"), orderBy("start", "desc"));
+  unsubEntries = onSnapshot(q, snap => {
     allEntries = snap.docs.map(d => {
       const data = d.data();
       return {
@@ -251,20 +270,27 @@ function startListening() {
         end:   data.end?.toDate   ? data.end.toDate()   : new Date(data.end),
       };
     });
-    document.getElementById("last-updated").textContent = "Updated " + new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
+    document.getElementById("last-updated").textContent =
+      "Updated " + new Date().toLocaleTimeString([],{hour:"2-digit",minute:"2-digit"});
     updateStats();
     renderStudents();
   });
 }
 
-// ── Stats ─────────────────────────────────────────────────────────────────────
+function stopListening() {
+  unsubEntries?.();
+  unsubEntries = null;
+  allEntries   = [];
+}
+
+// ── Stats (client-side — fine at classroom scale) ─────────────────────────────
 function updateStats() {
-  const ws = weekStart();
-  const weekEntries = allEntries.filter(e => new Date(e.start) >= ws);
-  const users = [...new Set(allEntries.map(e=>e.uid))];
-  const activeThisWeek = [...new Set(weekEntries.map(e=>e.uid))];
-  const weekSecs = weekEntries.reduce((s,e)=>s+e.duration,0);
-  const avgSecs  = activeThisWeek.length>0 ? Math.round(weekSecs/activeThisWeek.length) : 0;
+  const ws           = weekStart();
+  const weekEntries  = allEntries.filter(e => new Date(e.start) >= ws);
+  const users        = [...new Set(allEntries.map(e=>e.uid))];
+  const activeWeek   = [...new Set(weekEntries.map(e=>e.uid))];
+  const weekSecs     = weekEntries.reduce((s,e)=>s+e.duration,0);
+  const avgSecs      = activeWeek.length > 0 ? Math.round(weekSecs / activeWeek.length) : 0;
 
   document.getElementById("stat-students").textContent = users.length;
   document.getElementById("stat-week").textContent     = fmtShort(weekSecs);
@@ -274,12 +300,11 @@ function updateStats() {
 
 // ── Render ────────────────────────────────────────────────────────────────────
 window.renderStudents = () => {
-  const search   = document.getElementById("search-input").value.toLowerCase();
-  const projF    = document.getElementById("proj-filter").value;
-  const weekF    = document.getElementById("week-filter").value;
-  const ws       = weekStart();
+  const search = document.getElementById("search-input").value.toLowerCase();
+  const projF  = document.getElementById("proj-filter").value;
+  const weekF  = document.getElementById("week-filter").value;
+  const ws     = weekStart();
 
-  // Group by user
   const byUser = {};
   allEntries.forEach(e => {
     if (!byUser[e.uid]) byUser[e.uid] = { uid:e.uid, email:e.email||"", name:e.userName||e.email||"Unknown", entries:[] };
@@ -287,12 +312,8 @@ window.renderStudents = () => {
   });
 
   let users = Object.values(byUser);
-
-  // Filter
   if (search) users = users.filter(u => u.name.toLowerCase().includes(search) || u.email.toLowerCase().includes(search));
   if (projF)  users = users.filter(u => u.entries.some(e=>e.projectId===projF));
-
-  // Sort by total this week desc
   users.sort((a,b) => {
     const sumW = u => u.entries.filter(e=>new Date(e.start)>=ws).reduce((s,e)=>s+e.duration,0);
     return sumW(b)-sumW(a);
@@ -304,18 +325,15 @@ window.renderStudents = () => {
   }
 
   document.getElementById("student-list").innerHTML = users.map(u => {
-    const ws2 = weekStart();
-    const relevantEntries = weekF==="week" ? u.entries.filter(e=>new Date(e.start)>=ws2) : u.entries;
+    const relevantEntries = weekF==="week" ? u.entries.filter(e=>new Date(e.start)>=ws) : u.entries;
     const filteredEntries = projF ? relevantEntries.filter(e=>e.projectId===projF) : relevantEntries;
-
     const totalSecs  = filteredEntries.reduce((s,e)=>s+e.duration,0);
     const totalCount = filteredEntries.length;
     const isOpen     = expandedUsers.has(u.uid);
     const col        = userColor(u.email);
 
-    // Project breakdown pills
     const projBreakdown = Object.entries(
-      filteredEntries.reduce((a,e)=>{ if(e.projectId){ a[e.projectId]=(a[e.projectId]||0)+e.duration; } return a; },{})
+      filteredEntries.reduce((a,e)=>{ if(e.projectId){a[e.projectId]=(a[e.projectId]||0)+e.duration;} return a; },{})
     ).sort((a,b)=>b[1]-a[1]);
 
     const entryRows = filteredEntries.slice(0,50).map(e => {
