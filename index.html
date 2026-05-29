@@ -821,11 +821,22 @@ $("edit-modal").addEventListener("click",e=>{if(e.target===$("edit-modal"))close
 // ── Expanded entry groups state ───────────────────────────────────────────────
 window.expandedGroups = new Set();
 
-function groupKey(e){ return (e.desc||"Untitled") + "||" + (e.projectId||""); }
+function groupKey(e) {
+  const ms = e.start.toDate ? e.start.toDate().getTime() : new Date(e.start).getTime();
 
-window.timeLogClicked = (entry) => {
-  openEdit(entry);
-};
+  return `${e.desc || "Untitled"}||${e.projectId || ""}||${ms}`;
+}
+
+  window.timeLogClicked = (entry) => {
+      const matchingEntries = window.currentEntries.filter(e =>
+        groupKey(e) === groupKey(entry)
+      );
+
+  if(matchingEntries.length === 1 ){
+    openEdit(entry);
+  }
+}
+;
 
 function renderEntries(){
   const entries=window.currentEntries;
