@@ -212,12 +212,18 @@ let unsubEntries  = null;
 
 // ── Auth state ────────────────────────────────────────────────────────────────
 onAuthStateChanged(auth, user => {
-  if (user) {
+  // Only grant access if the signed-in account is exactly the admin email.
+  // This prevents students who are already logged in via Google on another
+  // page from being silently admitted here.
+  if (user && user.email === ADMIN_EMAIL) {
     document.getElementById("login-screen").style.display = "none";
     document.getElementById("app").style.display          = "flex";
     document.getElementById("admin-email").textContent    = user.email;
     startListening();
   } else {
+    // Signed in but not the admin account — sign them out of this page
+    // silently so they see the password prompt, not the dashboard.
+    if (user) signOut(auth);
     document.getElementById("login-screen").style.display = "flex";
     document.getElementById("app").style.display          = "none";
     stopListening();
@@ -227,7 +233,7 @@ onAuthStateChanged(auth, user => {
 // ── Login ─────────────────────────────────────────────────────────────────────
 // Hardcoded admin account email — set this to whatever you used when
 // creating the user in Firebase console → Authentication → Users.
-const ADMIN_EMAIL = "admin@lukasbraun2.github.io";
+const ADMIN_EMAIL = "admin@tempo.app";
 
 window.tryLogin = async () => {
   const pw  = document.getElementById("pw-input").value;
