@@ -544,15 +544,10 @@ let firestoreUnsub=null;
 onAuthStateChanged(auth, async user=>{
   window.currentUser=user;
   if(user){
-    try {
-      const token = await user.getIdTokenResult();
-      console.log('claims:', token.claims); // check what's here
-      if (token.claims.role === 'admin') {
-        await signOut(auth);
-        return;
-      }
-    } catch(e) {
-      console.error('Token error:', e);
+    const ADMIN_EMAILS = ['admin@lukasbraun2.github.io'];
+    if(ADMIN_EMAILS.includes(user.email)){
+      await signOut(auth);
+      return;
     }
     $("login-screen").style.display="none";
     $("app").style.display="block";
