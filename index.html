@@ -544,21 +544,9 @@ let firestoreUnsub=null;
 onAuthStateChanged(auth, user=>{
   window.currentUser=user;
   if(user){
-        const ADMIN_EMAILS = [
-      "admin@lukasbraun2.github.io",
-    ];
-    
-    if (ADMIN_EMAILS.includes(user.email)) {
-      signOut(auth);
-      document.getElementById("login-screen").innerHTML = `
-        <div style="text-align:center; padding:40px; color:#F05C5C; font-family:inherit;">
-          <p style="font-size:15px; font-weight:600;">Admin accounts cannot access the time tracker.</p>
-          <p style="font-size:13px; color:#5A5C70; margin-top:8px;">
-            Please use the 
-            <a href="/admin" style="color:#F5A623;">admin dashboard</a> 
-            instead.
-          </p>
-        </div>`;
+    const token = await user.getIdTokenResult();
+    if (token.claims.role === 'admin') {
+      await signOut(auth);
       return;
     }
     $("login-screen").style.display="none";
