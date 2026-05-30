@@ -541,7 +541,7 @@ window.handleSignOut=()=>signOut(auth);
 
 let firestoreUnsub=null;
 
-onAuthStateChanged(auth, user=>{
+onAuthStateChanged(auth, async user=>{
   window.currentUser=user;
   if(user){
     try {
