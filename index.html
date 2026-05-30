@@ -541,9 +541,15 @@ window.handleSignOut=()=>signOut(auth);
 
 let firestoreUnsub=null;
 
-onAuthStateChanged(auth, user=>{
+onAuthStateChanged(auth, async user=>{
   window.currentUser=user;
   if(user){
+    const ADMIN_EMAILS = ['admin@lukasbraun2.github.io'];
+    if(ADMIN_EMAILS.includes(user.email)){
+      await signOut(auth);
+      return;
+    }
+
     $("login-screen").style.display="none";
     $("app").style.display="block";
     $("user-name-sb").textContent=user.displayName||"";
