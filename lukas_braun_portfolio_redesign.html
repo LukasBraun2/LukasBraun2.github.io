@@ -1,0 +1,177 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Space+Grotesk:wght@500;600&display=swap');
+  .pf-root { font-family: 'Inter', var(--font-sans); color: var(--color-text-primary); max-width: 680px; }
+  .pf-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pf-logo { font-family: 'Space Grotesk', var(--font-sans); font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .pf-nav-links { display: flex; gap: 20px; }
+  .pf-nav-links a { font-size: 13px; color: var(--color-text-secondary); text-decoration: none; }
+  .pf-nav-links a:hover { color: var(--color-text-primary); }
+  .pf-hero { padding: 3rem 1.5rem 2rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pf-eyebrow { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; color: var(--color-text-secondary); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .pf-headline { font-family: 'Space Grotesk', var(--font-sans); font-size: 36px; font-weight: 600; line-height: 1.15; letter-spacing: -0.5px; margin: 0 0 1rem; }
+  .pf-headline .hl-green { color: #1D9E75; }
+  .pf-tagline { font-size: 15px; color: var(--color-text-secondary); line-height: 1.65; max-width: 480px; margin: 0 0 1.5rem; }
+  .pf-cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .pf-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; padding: 8px 16px; border-radius: var(--border-radius-md); cursor: pointer; text-decoration: none; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); }
+  .pf-btn-primary { background: #1D9E75; color: #fff; border-color: #1D9E75; }
+  .pf-btn-primary:hover { background: #0F6E56; }
+  .pf-section { padding: 2rem 1.5rem; border-bottom: 0.5px solid var(--color-border-tertiary); }
+  .pf-section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--color-text-secondary); margin: 0 0 1.25rem; }
+  .pf-about-text { font-size: 14px; line-height: 1.75; color: var(--color-text-secondary); max-width: 560px; margin: 0; }
+  .pf-projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
+  .pf-card { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; display: flex; flex-direction: column; gap: 6px; }
+  .pf-card:hover { border-color: var(--color-border-secondary); }
+  .pf-card-icon { width: 32px; height: 32px; border-radius: var(--border-radius-md); background: #E1F5EE; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+  .pf-card-icon i { font-size: 16px; color: #0F6E56; }
+  .pf-card-title { font-size: 13px; font-weight: 500; margin: 0; }
+  .pf-card-desc { font-size: 12px; color: var(--color-text-secondary); margin: 0; line-height: 1.5; }
+  .pf-card-link { font-size: 11px; color: #1D9E75; text-decoration: none; display: inline-flex; align-items: center; gap: 3px; margin-top: auto; padding-top: 4px; }
+  .pf-skills-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pf-skill-pill { font-size: 12px; padding: 4px 12px; border-radius: 99px; border: 0.5px solid var(--color-border-tertiary); color: var(--color-text-secondary); background: var(--color-background-secondary); }
+  .pf-contact-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .pf-contact-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 16px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+  .pf-contact-card i { font-size: 16px; color: var(--color-text-secondary); }
+  .pf-footer { padding: 1rem 1.5rem; }
+  .pf-footer-text { font-size: 12px; color: var(--color-text-secondary); }
+  .tab-bar { display: flex; gap: 0; border-bottom: 0.5px solid var(--color-border-tertiary); padding: 0 1.5rem; margin-bottom: 0; }
+  .tab { font-size: 12px; font-weight: 500; padding: 8px 14px 7px; cursor: pointer; color: var(--color-text-secondary); border-bottom: 2px solid transparent; margin-bottom: -0.5px; }
+  .tab.active { color: #1D9E75; border-bottom-color: #1D9E75; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+  .pf-cert-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+  .pf-cert-card { background: var(--color-background-secondary); border-radius: var(--border-radius-md); padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; }
+  .pf-cert-icon { width: 28px; height: 28px; border-radius: var(--border-radius-md); background: #E1F5EE; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .pf-cert-icon i { font-size: 14px; color: #0F6E56; }
+  .pf-cert-name { font-size: 12px; font-weight: 500; margin: 0 0 2px; }
+  .pf-cert-org { font-size: 11px; color: var(--color-text-secondary); margin: 0; }
+  .resume-bar { display: flex; align-items: center; justify-content: space-between; background: #E1F5EE; border-radius: var(--border-radius-md); padding: 12px 16px; margin-bottom: 1.25rem; }
+  .resume-bar-text { font-size: 13px; color: #085041; font-weight: 500; }
+  .resume-btn { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: var(--border-radius-md); background: #1D9E75; color: #fff; border: none; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+</style>
+
+<div class="pf-root">
+  <h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Redesigned portfolio mockup for Lukas Braun, developer</h2>
+
+  <nav class="pf-nav">
+    <span class="pf-logo">Lukas Braun</span>
+    <div class="pf-nav-links">
+      <a href="#">About</a>
+      <a href="#">Portfolio</a>
+      <a href="#">Certificates</a>
+      <a href="#">Contact</a>
+    </div>
+  </nav>
+
+  <div class="pf-hero">
+    <p class="pf-eyebrow">Developer & Teaching Assistant</p>
+    <h1 class="pf-headline">Building things.<br>Teaching others<br>to <span class="hl-green">do the same.</span></h1>
+    <p class="pf-tagline">I'm Lukas Braun — a developer and TA at Bay Valley Tech. I build automation tools, responsive web apps, and Skyrim mods (yes, really).</p>
+    <div class="pf-cta-row">
+      <a class="pf-btn pf-btn-primary" href="#"><i class="ti ti-arrow-down" aria-hidden="true"></i> View my work</a>
+      <a class="pf-btn" href="#"><i class="ti ti-download" aria-hidden="true"></i> Download résumé</a>
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <p class="pf-section-label">About</p>
+    <p class="pf-about-text">I started coding in JavaScript on Codecademy in 2014, then deepened my skills with C++ in a community college CS course in 2015. Since then I've built projects across game automation, web design, and file transfer utilities — and I now help others start their own coding journeys as a teaching assistant at Bay Valley Tech.</p>
+  </div>
+
+  <div class="pf-section">
+    <p class="pf-section-label">Skills</p>
+    <div class="pf-skills-row">
+      <span class="pf-skill-pill">JavaScript</span>
+      <span class="pf-skill-pill">C++</span>
+      <span class="pf-skill-pill">Python</span>
+      <span class="pf-skill-pill">Responsive Design</span>
+      <span class="pf-skill-pill">Bootstrap</span>
+      <span class="pf-skill-pill">Git / GitHub</span>
+      <span class="pf-skill-pill">File Transfer</span>
+      <span class="pf-skill-pill">Automation</span>
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <p class="pf-section-label">Portfolio</p>
+    <div class="resume-bar">
+      <span class="resume-bar-text"><i class="ti ti-file-text" style="vertical-align:-2px;margin-right:5px" aria-hidden="true"></i>Résumé available for download</span>
+      <button class="resume-btn"><i class="ti ti-download" aria-hidden="true"></i> Download</button>
+    </div>
+    <div class="pf-projects">
+      <div class="pf-card">
+        <div class="pf-card-icon"><i class="ti ti-robot" aria-hidden="true"></i></div>
+        <p class="pf-card-title">Color Bot</p>
+        <p class="pf-card-desc">Game automation bot for Windows. Nearly 1,000 unique clones generated.</p>
+        <a class="pf-card-link" href="#"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</a>
+      </div>
+      <div class="pf-card">
+        <div class="pf-card-icon"><i class="ti ti-layout-columns" aria-hidden="true"></i></div>
+        <p class="pf-card-title">Responsive Email</p>
+        <p class="pf-card-desc">Responsive web design showcase using Bootstrap.</p>
+        <a class="pf-card-link" href="#"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</a>
+      </div>
+      <div class="pf-card">
+        <div class="pf-card-icon"><i class="ti ti-transfer" aria-hidden="true"></i></div>
+        <p class="pf-card-title">File Transfer</p>
+        <p class="pf-card-desc">Transfer files from a local machine to a remote computer.</p>
+        <a class="pf-card-link" href="#"><i class="ti ti-brand-github" aria-hidden="true"></i> GitHub</a>
+      </div>
+      <div class="pf-card">
+        <div class="pf-card-icon"><i class="ti ti-sword" aria-hidden="true"></i></div>
+        <p class="pf-card-title">Skyrim Poison Mod</p>
+        <p class="pf-card-desc">Allows players to self-apply poison effects via magic in Skyrim SE.</p>
+        <a class="pf-card-link" href="#"><i class="ti ti-external-link" aria-hidden="true"></i> Nexus Mods</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <p class="pf-section-label">Certificates</p>
+    <div class="pf-cert-grid">
+      <div class="pf-cert-card">
+        <div class="pf-cert-icon"><i class="ti ti-certificate" aria-hidden="true"></i></div>
+        <div>
+          <p class="pf-cert-name">Bay Valley Tech Bootcamp</p>
+          <p class="pf-cert-org">Full-stack development</p>
+        </div>
+      </div>
+      <div class="pf-cert-card">
+        <div class="pf-cert-icon"><i class="ti ti-certificate" aria-hidden="true"></i></div>
+        <div>
+          <p class="pf-cert-name">Codecademy — JavaScript</p>
+          <p class="pf-cert-org">Completed 2014</p>
+        </div>
+      </div>
+      <div class="pf-cert-card">
+        <div class="pf-cert-icon"><i class="ti ti-school" aria-hidden="true"></i></div>
+        <div>
+          <p class="pf-cert-name">CS 100 — C++</p>
+          <p class="pf-cert-org">Community College, 2015</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-section">
+    <p class="pf-section-label">Contact</p>
+    <div class="pf-contact-row">
+      <div class="pf-contact-card">
+        <i class="ti ti-mail" aria-hidden="true"></i>
+        <span>your@email.com</span>
+      </div>
+      <div class="pf-contact-card">
+        <i class="ti ti-brand-github" aria-hidden="true"></i>
+        <span>LukasBraun2</span>
+      </div>
+      <div class="pf-contact-card">
+        <i class="ti ti-brand-linkedin" aria-hidden="true"></i>
+        <span>Add LinkedIn</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pf-footer">
+    <p class="pf-footer-text">© 2025 Lukas Braun · Built with WordPress</p>
+  </div>
+</div>
